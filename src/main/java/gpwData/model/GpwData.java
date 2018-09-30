@@ -1,18 +1,19 @@
 package gpwData.model;
 
-import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
-
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
 
 
-@Data
-//@Builder
 @Entity
+@Data
 public class GpwData {
 
     public GpwData(){}

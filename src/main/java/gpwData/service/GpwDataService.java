@@ -6,13 +6,24 @@ import gpwData.model.GpwData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
 public class GpwDataService {
 
-    @Autowired
-    GpwDataDAO gpwDataDAO;
+    private final GpwDataDAO gpwDataDAO;
 
-    public Iterable<GpwData> findAllGpwData(){
-        return gpwDataDAO.findAll();
+    @Autowired
+    public GpwDataService(GpwDataDAO gpwDataDAO) {
+        this.gpwDataDAO = gpwDataDAO;
+    }
+
+    public GpwData getActualDataByName(String name){
+        return gpwDataDAO.findFirstByNameOrderByDateDescTimeDesc(name.toUpperCase());
+    }
+
+    public BigDecimal getActualExchangeByName(String name){
+        GpwData gpwData = gpwDataDAO.findFirstByNameOrderByDateDescTimeDesc(name);
+        return gpwData.getExchange();
     }
 }

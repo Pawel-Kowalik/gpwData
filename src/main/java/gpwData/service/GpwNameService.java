@@ -5,13 +5,23 @@ import gpwData.model.GpwName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 @Service
 public class GpwNameService {
 
-    @Autowired
-    GpwNameDAO gpwNameDAO;
+    private final GpwNameDAO gpwNameDAO;
 
-    public Iterable<GpwName> findAllGpwData() {
-        return gpwNameDAO.findAll();
+    @Autowired
+    public GpwNameService(GpwNameDAO gpwNameDAO) {
+        this.gpwNameDAO = gpwNameDAO;
+    }
+
+    public Collection<String> getAllName() {
+        Collection<GpwName> gpwNames = (Collection<GpwName>) gpwNameDAO.findAll();
+        return gpwNames.stream()
+                .map(gpwName -> gpwName.getName())
+                .collect(Collectors.toList());
     }
 }

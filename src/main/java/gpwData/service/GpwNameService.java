@@ -2,21 +2,16 @@ package gpwData.service;
 
 import gpwData.dao.GpwNameDAO;
 import gpwData.model.GpwName;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class GpwNameService {
-
     private final GpwNameDAO gpwNameDAO;
-
-    @Autowired
-    public GpwNameService(GpwNameDAO gpwNameDAO) {
-        this.gpwNameDAO = gpwNameDAO;
-    }
 
     public Collection<String> getAllName() {
         Collection<GpwName> gpwNames = (Collection<GpwName>) gpwNameDAO.findAll();

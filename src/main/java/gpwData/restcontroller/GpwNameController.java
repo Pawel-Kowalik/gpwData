@@ -1,7 +1,7 @@
 package gpwData.restcontroller;
 
 import gpwData.service.GpwNameService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,15 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collection;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping(path = "/")
 public class GpwNameController {
 
     private final GpwNameService gpwNameService;
-
-    @Autowired
-    public GpwNameController(GpwNameService gpwNameService) {
-        this.gpwNameService = gpwNameService;
-    }
 
     @GetMapping(path = "/allName")
     public Collection<String> getAllGpwName(){

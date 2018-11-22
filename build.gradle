@@ -12,11 +12,23 @@ plugins {
     id 'org.springframework.boot' version '2.0.4.RELEASE'
 }
 
+group 'gpwData'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java-library'
 apply plugin: 'idea'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'war'
+
+jar {
+    baseName = 'gpwData'
+    version =  '1.0'
+}
+
+war {
+    baseName = 'gpwData'
+    version = '1.0'
+}
 
 allprojects {
     apply plugin: 'java-library'
@@ -48,17 +60,13 @@ dependencies {
 
 
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
-    compile group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.13'
     // https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client
     compile group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.3.0'
 
 
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     compile group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
-
-    // https://mvnrepository.com/artifact/com.google.guava/guava
-    compile group: 'com.google.guava', name: 'guava', version: '26.0-jre'
-
 
     // https://mvnrepository.com/artifact/io.springfox/springfox-swagger2
     compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.8.0'

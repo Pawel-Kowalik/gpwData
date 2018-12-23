@@ -34,37 +34,64 @@ public class GpwDataService {
     }
 
     //TODO check is correct data
-
     public Collection<GpwData> getHighestCompaniesDataOfDay(){
         Date date = Date.valueOf(checkWhichDateIsAllowed());
-        return gpwDataDAO.findFirst5GpwDataByDateOrderByChangePercentDescTimeDesc(date);
+//        return gpwDataDAO.findFirst5GpwDataByDateOrderByChangePercentDescTimeDesc(date);
+        return gpwDataDAO.findFirst5GpwDataByDateOrderByChangePercentDescTimeDesc(Date.valueOf("2018-11-09"));
     }
-    //TODO check is correct data
 
+    //TODO check is correct data
     public Collection<GpwData> getLowestCompaniesDataOfDay(){
         Date date = Date.valueOf(checkWhichDateIsAllowed());
-        return gpwDataDAO.findFirst5GpwDataByDateOrderByChangePercentAscTimeDesc(date);
+        return gpwDataDAO.findFirst5GpwDataByDateOrderByChangePercentAscTimeDesc(Date.valueOf("2018-11-09"));
+//        return gpwDataDAO.findFirst5GpwDataByDateOrderByChangePercentAscTimeDesc(date);
     }
 
+    //TODO change date format from "yyyy-mm-dd" to "dd-mm" / "dd"
+    //TODO check price format and round to .00
     public Collection<GpwData> getLastMonthCompanyExchange(String name){
-        return distinctLastMonthCompanyData(name);
+        return distinctLastMonthCompanyData(name, 30);
     }
 
-    private Collection<GpwData> distinctLastMonthCompanyData(String name) {
-        Date startDate = Date.valueOf(getActualDate(30));
+    public Collection<GpwData> getLastHalfMonthComapnyExchange(String name){
+        return distinctLastHalfMonthCompanyData(name, 15);
+    }
+
+    private Collection<GpwData> distinctLastMonthCompanyData(String name, Integer dayBefore) {
+        Date startDate = Date.valueOf(getActualDate(dayBefore));
         Date endDate = Date.valueOf(getActualDate(0));
         Collection<GpwData> lastMonthCompanyData = gpwDataDAO.findGpwDataByDateBetweenAndNameOrderByDateDescTimeDesc(
-                startDate, endDate, name);
+                Date.valueOf("2018-10-11"), Date.valueOf("2018-11-10"), name);
+//                startDate, endDate, name);
         return lastMonthCompanyData.stream()
                 .filter(distinctByKey(GpwData::getDate))
+                .sorted((date1, date2) -> compareTo(date1.getDate(), date2.getDate()))
                 .collect(Collectors.toList());
+    }
+
+    private Collection<GpwData> distinctLastHalfMonthCompanyData(String name, Integer dayBefore) {
+        Date startDate = Date.valueOf(getActualDate(dayBefore));
+        Date endDate = Date.valueOf(getActualDate(0));
+        Collection<GpwData> lastMonthCompanyData = gpwDataDAO.findGpwDataByDateBetweenAndNameOrderByDateDescTimeDesc(
+                Date.valueOf("2018-10-20"), Date.valueOf("2018-11-10"), name);
+//                startDate, endDate, name);
+
+        return lastMonthCompanyData.stream()
+                .filter(distinctByKey(GpwData::getDate))
+                .sorted((date1, date2) -> compareTo(date1.getDate(), date2.getDate()))
+                .collect(Collectors.toList());
+
+    }
+
+
+    public int compareTo(Date date1, Date date2) {
+        return date1.compareTo(date2);
     }
 
     private <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
         Set<Object> seen = ConcurrentHashMap.newKeySet();
         return t -> seen.add(keyExtractor.apply(t));
     }
-
 
     private LocalDate checkWhichDateIsAllowed(){
         Calendar calendar = Calendar.getInstance();

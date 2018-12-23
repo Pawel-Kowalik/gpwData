@@ -42,4 +42,9 @@ public class GpwDataController {
     public Collection<GpwData> getLastMonthCompanyData(@PathVariable String name) {
         return gpwDataService.getLastMonthCompanyExchange(name);
     }
+
+    @GetMapping(path = "companyLastHalfMonth/{name}")
+    public Collection<GpwData> getLastHalfMonthCompanyData(@PathVariable String name) {
+        return gpwDataService.getLastHalfMonthComapnyExchange(name);
+    }
 }

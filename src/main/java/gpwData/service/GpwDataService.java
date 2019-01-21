@@ -3,6 +3,7 @@ package gpwData.service;
 
 import gpwData.dao.GpwDataDAO;
 import gpwData.model.GpwData;
+import gpwData.model.GpwDataWithoutPercent;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +12,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Period;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -33,21 +32,25 @@ public class GpwDataService {
         return gpwData.getExchange();
     }
 
-    //TODO check is correct data
-    public Collection<GpwData> getHighestCompaniesDataOfDay(){
-        Date date = Date.valueOf(checkWhichDateIsAllowed());
-//        return gpwDataDAO.findFirst5GpwDataByDateOrderByChangePercentDescTimeDesc(date);
-        return gpwDataDAO.findFirst5GpwDataByDateOrderByChangePercentDescTimeDesc(Date.valueOf("2018-11-09"));
+    public Collection<GpwDataWithoutPercent> getHighestCompaniesDataOfDay(){
+         Date date = Date.valueOf(checkWhichDateIsAllowed());
+         long count = sortGpwDataWithoutPercent(date).stream().count();
+         Collection<GpwDataWithoutPercent> gpwDataWithoutPercents = sortGpwDataWithoutPercent(date).stream()
+                 .skip(count - 5)
+                 .collect(Collectors.toList());
+
+         Collections.reverse((List<?>) gpwDataWithoutPercents);
+
+         return gpwDataWithoutPercents;
     }
 
-    //TODO check is correct data
-    public Collection<GpwData> getLowestCompaniesDataOfDay(){
+    public Collection<GpwDataWithoutPercent> getLowestCompaniesDataOfDay(){
         Date date = Date.valueOf(checkWhichDateIsAllowed());
-        return gpwDataDAO.findFirst5GpwDataByDateOrderByChangePercentAscTimeDesc(Date.valueOf("2018-11-09"));
-//        return gpwDataDAO.findFirst5GpwDataByDateOrderByChangePercentAscTimeDesc(date);
+        return sortGpwDataWithoutPercent(date).stream()
+                .limit(5)
+                .collect(Collectors.toList());
     }
 
-    //TODO change date format from "yyyy-mm-dd" to "dd-mm" / "dd"
     //TODO check price format and round to .00
     public Collection<GpwData> getLastMonthCompanyExchange(String name){
         return distinctLastMonthCompanyData(name, 30);
@@ -61,8 +64,7 @@ public class GpwDataService {
         Date startDate = Date.valueOf(getActualDate(dayBefore));
         Date endDate = Date.valueOf(getActualDate(0));
         Collection<GpwData> lastMonthCompanyData = gpwDataDAO.findGpwDataByDateBetweenAndNameOrderByDateDescTimeDesc(
-                Date.valueOf("2018-10-11"), Date.valueOf("2018-11-10"), name);
-//                startDate, endDate, name);
+                startDate, endDate, name);
         return lastMonthCompanyData.stream()
                 .filter(distinctByKey(GpwData::getDate))
                 .sorted((date1, date2) -> compareTo(date1.getDate(), date2.getDate()))
@@ -73,18 +75,49 @@ public class GpwDataService {
         Date startDate = Date.valueOf(getActualDate(dayBefore));
         Date endDate = Date.valueOf(getActualDate(0));
         Collection<GpwData> lastMonthCompanyData = gpwDataDAO.findGpwDataByDateBetweenAndNameOrderByDateDescTimeDesc(
-                Date.valueOf("2018-10-20"), Date.valueOf("2018-11-10"), name);
-//                startDate, endDate, name);
+                startDate, endDate, name);
 
         return lastMonthCompanyData.stream()
                 .filter(distinctByKey(GpwData::getDate))
                 .sorted((date1, date2) -> compareTo(date1.getDate(), date2.getDate()))
                 .collect(Collectors.toList());
-
     }
 
+    private Collection<GpwDataWithoutPercent> sortGpwDataWithoutPercent(Date date) {
+        return mapGwpDataToGpwDataWithoutPercent(date).stream()
+                .filter(distinctByKey(GpwDataWithoutPercent::getName))
+                .sorted(Comparator.comparingDouble(GpwDataWithoutPercent::getChangePercent))
+                .collect(Collectors.toList());
+    }
 
-    public int compareTo(Date date1, Date date2) {
+    private Collection<GpwDataWithoutPercent> mapGwpDataToGpwDataWithoutPercent(Date date) {
+        Collection<GpwData> gpwDataByDate = gpwDataDAO.findAllByDate(date);
+        Set<GpwDataWithoutPercent> gpwDataWithoutPercents = new HashSet<>();
+
+        for(GpwData gpwData : gpwDataByDate) {
+            gpwDataWithoutPercents.add(GpwDataWithoutPercent.builder()
+                    .id_gpw_data(gpwData.getId_gpw_data())
+                    .name(gpwData.getName())
+                    .exchange(gpwData.getExchange())
+                    .changes(gpwData.getChanges())
+                    .changePercent(convertStringToDoublePercent(gpwData.getChangePercent()))
+                    .numberOfTransaction(gpwData.getNumberOfTransaction())
+                    .turnover(gpwData.getTurnover())
+                    .openPrice(gpwData.getOpenPrice())
+                    .maxPrice(gpwData.getMaxPrice())
+                    .minPrice(gpwData.getMinPrice())
+                    .time(gpwData.getTime())
+                    .date(gpwData.getDate())
+                    .build());
+        }
+        return gpwDataWithoutPercents;
+    }
+
+    private Double convertStringToDoublePercent(String sPercent) {
+        return Double.valueOf(sPercent.substring(0, sPercent.length()-1).replace(",", "."));
+    }
+
+    private int compareTo(Date date1, Date date2) {
         return date1.compareTo(date2);
     }
 

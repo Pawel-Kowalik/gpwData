@@ -4,7 +4,6 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.4.RELEASE")
-        classpath('se.transmode.gradle:gradle-docker:1.2')
     }
 }
 
@@ -14,22 +13,21 @@ plugins {
 }
 
 group 'gpwData'
-version '1.0-SNAPSHOT'
+version '3.5-SNAPSHOT'
 
 apply plugin: 'java-library'
 apply plugin: 'idea'
 apply plugin: 'io.spring.dependency-management'
-apply plugin: 'jar'
-apply plugin: 'docker'
+apply plugin: 'war'
 
 jar {
     baseName = 'gpwData'
-    version =  '1.0'
+    version =  '3.5'
 }
 
 war {
     baseName = 'gpwData'
-    version = '1.0'
+    version = '3.5'
 }
 
 allprojects {
@@ -47,16 +45,8 @@ configurations {
 }
 
 
-task buildDocker(type: Docker, dependsOn: build) {
-    push = true
-    applicationName = jar.baseName
-    dockerfile = file('src/main/docker/Dockerfile')
-    doFirst {
-        copy {
-            from jar
-            into stageDir
-        }
-    }
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.6'
 }
 
 dependencies {

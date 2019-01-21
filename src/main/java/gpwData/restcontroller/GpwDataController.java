@@ -1,6 +1,7 @@
 package gpwData.restcontroller;
 
 import gpwData.model.GpwData;
+import gpwData.model.GpwDataWithoutPercent;
 import gpwData.service.GpwDataService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,12 +30,12 @@ public class GpwDataController {
     }
 
     @GetMapping(path = "/higestCompaniesData")
-    public Collection<GpwData> getHighestCompaniesData() {
+    public Collection<GpwDataWithoutPercent> getHighestCompaniesData() {
         return gpwDataService.getHighestCompaniesDataOfDay();
     }
 
     @GetMapping(path = "/lowestCompaniesData")
-    public Collection<GpwData> getLowestCompaniesData() {
+    public Collection<GpwDataWithoutPercent> getLowestCompaniesData() {
         return gpwDataService.getLowestCompaniesDataOfDay();
     }
 

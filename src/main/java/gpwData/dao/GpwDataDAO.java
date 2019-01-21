@@ -16,4 +16,6 @@ public interface GpwDataDAO extends CrudRepository<GpwData, Long> {
     Collection<GpwData> findFirst5GpwDataByDateOrderByChangePercentAscTimeDesc(Date date);
 
     Collection<GpwData> findGpwDataByDateBetweenAndNameOrderByDateDescTimeDesc(Date startDate, Date endDate, String name);
+
+    Collection<GpwData> findAllByDate(Date date);
 }

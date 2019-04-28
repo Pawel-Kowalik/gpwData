@@ -1,26 +1,20 @@
-server.port=8080
+server.port=
 
 # Database settings
-spring.datasource.url=jdbc:mariadb://localhost:3306/bet_at_university?useLegacyDatetimeCode=false&serverTimezone=UTC
+spring.datasource.url=
 spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MariaDBDialect
+spring.datasource.username=
+spring.datasource.password=
 spring.jpa.hibernate.ddl-auto=none
 
 hibernate.show_sql=true
 spring.jpa.properties.hibernate.use_sql_comments=true
 spring.jpa.properties.hibernate.format_sql=true
 
-# hibernate.globally_quoted_identifiers=true
-# spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-
-
-spring.datasource.username=root
-spring.datasource.password=
 
 spring.datasource.hikari.connection-timeout=60000
 spring.datasource.hikari.maximum-pool-size=5
 
 # logging
-#logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
 logging.level.org.hibernate.SQL=debug
-# logging.level.org.hibernate.type.descriptor.sql=trace
 logging.level.=error

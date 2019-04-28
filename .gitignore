@@ -33,6 +33,3 @@ hs_err_pid*
 
 # but do not ignore gradle-wrapper
 gradle-wrapper.jar
-
-#angular libs
-Angular Client/angular-client/node_modules/

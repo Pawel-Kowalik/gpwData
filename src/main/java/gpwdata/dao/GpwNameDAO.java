@@ -1,6 +1,6 @@
-package gpwData.dao;
+package gpwdata.dao;
 
-import gpwData.model.GpwName;
+import gpwdata.model.GpwName;
 import org.springframework.data.repository.CrudRepository;
 
 

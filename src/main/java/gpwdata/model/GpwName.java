@@ -1,4 +1,4 @@
-package gpwData.model;
+package gpwdata.model;
 
 import lombok.Data;
 
@@ -10,8 +10,6 @@ import javax.persistence.Id;
 @Data
 @Entity
 public class GpwName {
-
-    public GpwName(){}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

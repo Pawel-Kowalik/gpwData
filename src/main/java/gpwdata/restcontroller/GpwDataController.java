@@ -1,8 +1,8 @@
-package gpwData.restcontroller;
+package gpwdata.restcontroller;
 
-import gpwData.model.GpwData;
-import gpwData.model.GpwDataWithoutPercent;
-import gpwData.service.GpwDataService;
+import gpwdata.model.GpwData;
+import gpwdata.model.GpwDataWithoutPercent;
+import gpwdata.service.GpwDataService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,38 +14,33 @@ import java.util.Collection;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(path = "/")
+@RequestMapping(path = "/gpw")
 public class GpwDataController {
 
     private final GpwDataService gpwDataService;
 
-    @GetMapping(path = "/data/{name}")
+    @GetMapping(path = "/data/company/{name}")
     public GpwData getDataByName(@PathVariable String name){
         return gpwDataService.getActualDataByName(name);
     }
 
-    @GetMapping(path = "/exchange/{name}")
+    @GetMapping(path = "/exchange/company/{name}")
     public BigDecimal getExchangeByName(@PathVariable String name) {
         return gpwDataService.getActualExchangeByName(name);
     }
 
-    @GetMapping(path = "/higestCompaniesData")
+    @GetMapping(path = "/highest-companies-data")
     public Collection<GpwDataWithoutPercent> getHighestCompaniesData() {
         return gpwDataService.getHighestCompaniesDataOfDay();
     }
 
-    @GetMapping(path = "/lowestCompaniesData")
+    @GetMapping(path = "/lowest-companies-data")
     public Collection<GpwDataWithoutPercent> getLowestCompaniesData() {
         return gpwDataService.getLowestCompaniesDataOfDay();
     }
 
-    @GetMapping(path = "companyLastMonth/{name}")
-    public Collection<GpwData> getLastMonthCompanyData(@PathVariable String name) {
-        return gpwDataService.getLastMonthCompanyExchange(name);
-    }
-
-    @GetMapping(path = "companyLastHalfMonth/{name}")
-    public Collection<GpwData> getLastHalfMonthCompanyData(@PathVariable String name) {
-        return gpwDataService.getLastHalfMonthComapnyExchange(name);
+    @GetMapping(path = "data/company/{name}/last-days/{dayBefore}")
+    public Collection<GpwData> getLastMonthCompanyData(@PathVariable String name, @PathVariable Integer dayBefore) {
+        return gpwDataService.getHistoryCompanyExchange(name, dayBefore);
     }
 }

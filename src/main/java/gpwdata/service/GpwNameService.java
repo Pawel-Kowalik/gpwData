@@ -1,7 +1,7 @@
-package gpwData.service;
+package gpwdata.service;
 
-import gpwData.dao.GpwNameDAO;
-import gpwData.model.GpwName;
+import gpwdata.dao.GpwNameDAO;
+import gpwdata.model.GpwName;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ public class GpwNameService {
     public Collection<String> getAllName() {
         Collection<GpwName> gpwNames = (Collection<GpwName>) gpwNameDAO.findAll();
         return gpwNames.stream()
-                .map(gpwName -> gpwName.getName())
+                .map(GpwName::getName)
                 .collect(Collectors.toList());
     }
 }

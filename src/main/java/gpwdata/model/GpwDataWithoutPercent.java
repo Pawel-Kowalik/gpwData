@@ -1,8 +1,9 @@
-package gpwData.model;
+package gpwdata.model;
 
 import lombok.Builder;
 import lombok.Data;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,11 +13,12 @@ import java.sql.Time;
 
 @Data
 @Builder
+@Entity
 public class GpwDataWithoutPercent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_gpw_data;
+    private Long idGpwData;
 
     private String name;
 

@@ -1,7 +1,6 @@
-package gpwData.model;
+package gpwdata.model;
 
 import lombok.Data;
-import lombok.Getter;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,11 +15,9 @@ import java.sql.Time;
 @Data
 public class GpwData {
 
-    public GpwData(){}
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_gpw_data;
+    private Long idGpwData;
 
     private String name;
 

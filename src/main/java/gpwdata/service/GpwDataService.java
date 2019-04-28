@@ -1,17 +1,14 @@
-package gpwData.service;
+package gpwdata.service;
 
 
-import gpwData.dao.GpwDataDAO;
-import gpwData.model.GpwData;
-import gpwData.model.GpwDataWithoutPercent;
+import gpwdata.dao.GpwDataDAO;
+import gpwdata.model.GpwData;
+import gpwdata.model.GpwDataWithoutPercent;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.sql.Date;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.Period;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -22,6 +19,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class GpwDataService {
     private final GpwDataDAO gpwDataDAO;
+    private final ActualDateService actualDateService;
 
     public GpwData getActualDataByName(String name){
         return gpwDataDAO.findFirstByNameOrderByDateDescTimeDesc(name.toUpperCase());
@@ -33,8 +31,8 @@ public class GpwDataService {
     }
 
     public Collection<GpwDataWithoutPercent> getHighestCompaniesDataOfDay(){
-         Date date = Date.valueOf(checkWhichDateIsAllowed());
-         long count = sortGpwDataWithoutPercent(date).stream().count();
+         Date date = Date.valueOf(actualDateService.getActualDate());
+         long count = (long) sortGpwDataWithoutPercent(date).size();
          Collection<GpwDataWithoutPercent> gpwDataWithoutPercents = sortGpwDataWithoutPercent(date).stream()
                  .skip(count - 5)
                  .collect(Collectors.toList());
@@ -45,38 +43,21 @@ public class GpwDataService {
     }
 
     public Collection<GpwDataWithoutPercent> getLowestCompaniesDataOfDay(){
-        Date date = Date.valueOf(checkWhichDateIsAllowed());
+        Date date = Date.valueOf(actualDateService.getActualDate());
         return sortGpwDataWithoutPercent(date).stream()
                 .limit(5)
                 .collect(Collectors.toList());
     }
 
-    //TODO check price format and round to .00
-    public Collection<GpwData> getLastMonthCompanyExchange(String name){
-        return distinctLastMonthCompanyData(name, 30);
+    public Collection<GpwData> getHistoryCompanyExchange(String name, Integer dayBefore){
+        return distinctLastCompanyData(name, dayBefore);
     }
 
-    public Collection<GpwData> getLastHalfMonthComapnyExchange(String name){
-        return distinctLastHalfMonthCompanyData(name, 15);
-    }
-
-    private Collection<GpwData> distinctLastMonthCompanyData(String name, Integer dayBefore) {
-        Date startDate = Date.valueOf(getActualDate(dayBefore));
-        Date endDate = Date.valueOf(getActualDate(0));
+    private Collection<GpwData> distinctLastCompanyData(String name, Integer dayBefore) {
+        Date startDate = Date.valueOf(actualDateService.getActualDate(dayBefore));
+        Date endDate = Date.valueOf(actualDateService.getActualDate(0));
         Collection<GpwData> lastMonthCompanyData = gpwDataDAO.findGpwDataByDateBetweenAndNameOrderByDateDescTimeDesc(
                 startDate, endDate, name);
-        return lastMonthCompanyData.stream()
-                .filter(distinctByKey(GpwData::getDate))
-                .sorted((date1, date2) -> compareTo(date1.getDate(), date2.getDate()))
-                .collect(Collectors.toList());
-    }
-
-    private Collection<GpwData> distinctLastHalfMonthCompanyData(String name, Integer dayBefore) {
-        Date startDate = Date.valueOf(getActualDate(dayBefore));
-        Date endDate = Date.valueOf(getActualDate(0));
-        Collection<GpwData> lastMonthCompanyData = gpwDataDAO.findGpwDataByDateBetweenAndNameOrderByDateDescTimeDesc(
-                startDate, endDate, name);
-
         return lastMonthCompanyData.stream()
                 .filter(distinctByKey(GpwData::getDate))
                 .sorted((date1, date2) -> compareTo(date1.getDate(), date2.getDate()))
@@ -96,7 +77,7 @@ public class GpwDataService {
 
         for(GpwData gpwData : gpwDataByDate) {
             gpwDataWithoutPercents.add(GpwDataWithoutPercent.builder()
-                    .id_gpw_data(gpwData.getId_gpw_data())
+                    .idGpwData(gpwData.getIdGpwData())
                     .name(gpwData.getName())
                     .exchange(gpwData.getExchange())
                     .changes(gpwData.getChanges())
@@ -124,36 +105,6 @@ public class GpwDataService {
     private <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
         Set<Object> seen = ConcurrentHashMap.newKeySet();
         return t -> seen.add(keyExtractor.apply(t));
-    }
-
-    private LocalDate checkWhichDateIsAllowed(){
-        Calendar calendar = Calendar.getInstance();
-
-        if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY){
-            return getActualDate(1);
-        }
-
-        if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY){
-            return getActualDate(2);
-        }
-
-        if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY && isBeforeHourWhenStockIsOpen()) {
-            return getActualDate(3);
-        }
-
-        if(isBeforeHourWhenStockIsOpen()){
-            return getActualDate(1);
-        }
-
-        return getActualDate(0);
-    }
-
-    private boolean isBeforeHourWhenStockIsOpen() {
-        return LocalTime.now().isBefore(LocalTime.of(9, 30));
-    }
-
-    private LocalDate getActualDate(Integer dayBefore){
-        return LocalDate.now().minus(Period.ofDays(dayBefore));
     }
 
 }

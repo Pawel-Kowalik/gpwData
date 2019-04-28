@@ -1,5 +1,5 @@
 # GPW Data
-Spring-Boot application contains RESTfull API with polish stock exchange data.  
+Spring-Boot application contains RESTful API with polish stock exchange data.  
 
 # Techlogies and frameworks use in project:
 <ul>

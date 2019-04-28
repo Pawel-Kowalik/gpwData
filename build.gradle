@@ -3,17 +3,17 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.4.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.3.RELEASE")
     }
 }
 
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '2.0.4.RELEASE'
+    id 'org.springframework.boot' version '2.1.3.RELEASE'
 }
 
 group 'gpwData'
-version '3.5-SNAPSHOT'
+version '3.6-SNAPSHOT'
 
 apply plugin: 'java-library'
 apply plugin: 'idea'
@@ -22,12 +22,12 @@ apply plugin: 'war'
 
 jar {
     baseName = 'gpwData'
-    version =  '3.5'
+    version =  '3.6'
 }
 
 war {
     baseName = 'gpwData'
-    version = '3.5'
+    version = '3.6'
 }
 
 allprojects {
@@ -44,24 +44,24 @@ configurations {
     providedRuntime
 }
 
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.6'
+wrapper {
+    gradleVersion = '5.0'
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
 
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.0.4.RELEASE'
+    compile ('org.springframework.boot:spring-boot-starter-web')
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools
-    compile group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '2.0.4.RELEASE'
+    compile ('org.springframework.boot:spring-boot-devtools')
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.0.4.RELEASE'
+    compile ('org.springframework.boot:spring-boot-starter-actuator')
 
 
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.0.4.RELEASE'
+    compile ('org.springframework.boot:spring-boot-starter-data-jpa')
 
 
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java

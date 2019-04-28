@@ -1,7 +1,7 @@
 # GPW Data
 Spring-Boot application contains RESTful API with polish stock exchange data.  
 
-# Techlogies and frameworks use in project:
+## Techlogies and frameworks use in project:
 <ul>
   <li>Java 8</li>
   <li>Spring-Boot</li>
@@ -13,7 +13,7 @@ Spring-Boot application contains RESTful API with polish stock exchange data.
   <li>Gradle</li>
 </ul>
 
-# API
+## API
 <ul>
   <li>
     <p>

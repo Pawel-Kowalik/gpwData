@@ -9,12 +9,11 @@ import java.util.Collection;
 
 
 public class GpwNameServiceTest extends SpringBootTestBasedAbstract {
-   @Autowired GpwNameService gpwNameService;
+    @Autowired GpwNameService gpwNameService;
 
     @Test
-    public void shouldNameListIsNotEmpty() {
+    public void shouldListSizeIs10() {
         Collection<String> gpwNames = gpwNameService.getAllName();
-
-        Assert.assertNotNull(gpwNames);
+        Assert.assertEquals(10, gpwNames.size());
     }
 }

@@ -1,5 +1,6 @@
 # GPW Data
-Spring-Boot application contains RESTful API with polish stock exchange data.  
+Spring-Boot application contains RESTful API with polish stock exchange data. <br/>
+In tests project use H2 database and example data. 
 
 ## Techlogies and frameworks use in project:
 <ul>
@@ -9,6 +10,7 @@ Spring-Boot application contains RESTful API with polish stock exchange data.
   <li>Lombok</li>
   <li>MySQL</li>
   <li>Junit 4</li>
+  <li>H2</li>
   <li>Swagger2</li>
   <li>Gradle</li>
 </ul>

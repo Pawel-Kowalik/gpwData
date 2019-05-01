@@ -2,44 +2,43 @@ package gpwdata.service;
 
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Period;
-import java.util.Calendar;
 
 @Service
 public class ActualDateService {
 
-    public LocalDate getActualDate(){
-        Calendar calendar = Calendar.getInstance();
-        return checkWhichDateIsAllowed(calendar);
+    public LocalDate getActualDate(LocalDate date, LocalTime time){
+        return checkWhichDateIsAllowed(date, time);
     }
 
-    LocalDate getActualDate(Integer dayBefore){
-        return LocalDate.now().minus(Period.ofDays(dayBefore));
+    private LocalDate checkWhichDateIsAllowed(LocalDate date, LocalTime time) {
+        if(date.getDayOfWeek().equals(DayOfWeek.SATURDAY)){
+            return getActualDate(date,1);
+        }
+
+        if(date.getDayOfWeek().equals(DayOfWeek.SUNDAY)){
+            return getActualDate(date,2);
+        }
+
+        if(date.getDayOfWeek().equals(DayOfWeek.MONDAY) && isBeforeHourWhenStockIsOpen(time)) {
+            return getActualDate(date,3);
+        }
+
+        if(isBeforeHourWhenStockIsOpen(time)){
+            return getActualDate(date,1);
+        }
+
+        return getActualDate(date,0);
     }
 
-    private LocalDate checkWhichDateIsAllowed(Calendar calendar) {
-        if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY){
-            return getActualDate(1);
-        }
-
-        if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY){
-            return getActualDate(2);
-        }
-
-        if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY && isBeforeHourWhenStockIsOpen()) {
-            return getActualDate(3);
-        }
-
-        if(isBeforeHourWhenStockIsOpen()){
-            return getActualDate(1);
-        }
-
-        return getActualDate(0);
+    private LocalDate getActualDate(LocalDate date, Integer dayBefore){
+        return date.minus(Period.ofDays(dayBefore));
     }
 
-    private boolean isBeforeHourWhenStockIsOpen() {
-        return LocalTime.now().isBefore(LocalTime.of(9, 30));
+    private boolean isBeforeHourWhenStockIsOpen(LocalTime time) {
+        return time.isBefore(LocalTime.of(9, 30));
     }
 }

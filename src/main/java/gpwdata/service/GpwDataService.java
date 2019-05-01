@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.Period;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -30,10 +31,9 @@ public class GpwDataService {
         return gpwData.getExchange();
     }
 
-    public Collection<GpwDataWithoutPercent> getHighestCompaniesDataOfDay(){
-         Date date = Date.valueOf(actualDateService.getActualDate());
-         long count = (long) sortGpwDataWithoutPercent(date).size();
-         Collection<GpwDataWithoutPercent> gpwDataWithoutPercents = sortGpwDataWithoutPercent(date).stream()
+    public Collection<GpwDataWithoutPercent> getHighestCompaniesDataOfDay(Date actualDate){
+         long count = (long) sortGpwDataWithoutPercent(actualDate).size();
+         Collection<GpwDataWithoutPercent> gpwDataWithoutPercents = sortGpwDataWithoutPercent(actualDate).stream()
                  .skip(count - 5)
                  .collect(Collectors.toList());
 
@@ -42,22 +42,20 @@ public class GpwDataService {
          return gpwDataWithoutPercents;
     }
 
-    public Collection<GpwDataWithoutPercent> getLowestCompaniesDataOfDay(){
-        Date date = Date.valueOf(actualDateService.getActualDate());
-        return sortGpwDataWithoutPercent(date).stream()
+    public Collection<GpwDataWithoutPercent> getLowestCompaniesDataOfDay(Date actualDate){
+        return sortGpwDataWithoutPercent(actualDate).stream()
                 .limit(5)
                 .collect(Collectors.toList());
     }
 
-    public Collection<GpwData> getHistoryCompanyExchange(String name, Integer dayBefore){
-        return distinctLastCompanyData(name, dayBefore);
+    public Collection<GpwData> getHistoryCompanyExchange(String name, Date actualDate, Integer dayBefore){
+        return distinctLastCompanyData(name,actualDate, dayBefore);
     }
 
-    private Collection<GpwData> distinctLastCompanyData(String name, Integer dayBefore) {
-        Date startDate = Date.valueOf(actualDateService.getActualDate(dayBefore));
-        Date endDate = Date.valueOf(actualDateService.getActualDate(0));
+    private Collection<GpwData> distinctLastCompanyData(String name, Date actualDate, Integer dayBefore) {
+        Date startDate = Date.valueOf(actualDate.toLocalDate().minus(Period.ofDays(dayBefore)));
         Collection<GpwData> lastMonthCompanyData = gpwDataDAO.findGpwDataByDateBetweenAndNameOrderByDateDescTimeDesc(
-                startDate, endDate, name);
+                startDate, actualDate, name);
         return lastMonthCompanyData.stream()
                 .filter(distinctByKey(GpwData::getDate))
                 .sorted((date1, date2) -> compareTo(date1.getDate(), date2.getDate()))
